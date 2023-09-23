@@ -15,7 +15,7 @@ public class ContextAdoNet: IDisposable
         this.connectionString = connectionString;
     }
 
-    private SqlConnection GetConnection()
+    public SqlConnection GetConnection()
     {
         if (connection == null)
         {
