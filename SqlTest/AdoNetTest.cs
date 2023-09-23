@@ -61,9 +61,17 @@ public class AdoNetTest
     }
     
     [Fact]
-    public void InsertLoteOne()
+    public void InsertList()
     {
-        _pessoaRepository.InsertLoteOne(_listPessoa);
+        _pessoaRepository.Insert(_listPessoa);
+        Assert.True(true);
+
+    }
+    
+    [Fact]
+    public void InsertBulkList()
+    {
+        _pessoaRepository.BulkInsert(_listPessoa);
         Assert.True(true);
 
     }

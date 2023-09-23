@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 using System.Reflection;
 using Infra.Connection;
 
@@ -19,13 +20,38 @@ public abstract class BaseRepositoryAbstract<T> where T : class
     private string CommandInsert(Type entity)
     {
 
-        PropertyInfo[] properties = entity.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        PropertyInfo[] properties = entity.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => !x.PropertyType.IsClass || x.PropertyType == typeof(string)).ToArray();
 
         var tableName = entity.Name;
-        var columns = string.Join(", ", properties.Where(x => !x.PropertyType.IsClass || x.PropertyType == typeof(string)).Select(prop => prop.Name));
-        var values = string.Join(", ", properties.Where(x => !x.PropertyType.IsClass || x.PropertyType == typeof(string)).Select(prop => $"@{prop.Name}"));
+        var columns = string.Join(", ", properties.Select(prop => prop.Name));
+        var values = string.Join(", ", properties.Select(prop => $"@{prop.Name}"));
 
         return $"INSERT INTO {tableName} ({columns}) VALUES ({values});";
+    }
+    
+     private DataTable GetDataTable(Type entity, List<T> list)
+    {
+
+        PropertyInfo[] properties = entity.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => !x.PropertyType.IsClass || x.PropertyType == typeof(string)).ToArray();
+        var datatable = new DataTable();
+        foreach (var prop in properties)
+        {
+            datatable.Columns.Add(prop.Name, prop.PropertyType);
+        }
+
+        foreach (var obj in list)
+        {
+            var valores = new object[properties.Length];
+            for (int i = 0; i < properties.Length; i++)
+            {
+                valores[i] = properties[i].GetValue(obj);
+            }
+
+            datatable.Rows.Add(valores);
+        }
+
+
+        return datatable;
     }
 
     
@@ -54,7 +80,7 @@ public abstract class BaseRepositoryAbstract<T> where T : class
         command.ExecuteNonQuery();
     } 
     
-    public void InsertLoteOne(List<T> entityList)
+    public void Insert(List<T> entityList)
     {
         var commandSql = CommandInsert(typeof(T));
         using SqlConnection connection = _contextAdoNet.GetConnection();
@@ -69,6 +95,20 @@ public abstract class BaseRepositoryAbstract<T> where T : class
             }
             command.ExecuteNonQuery();
         }
-    } 
+    }
+    
+    public void BulkInsert(List<T> entityList)
+    {
+        var tipo = typeof(T);
+        using SqlConnection connection = _contextAdoNet.GetConnection();
+        using SqlBulkCopy bulkCopy = new SqlBulkCopy(connection);
+        bulkCopy.DestinationTableName = tipo.Name;
+        var table = GetDataTable(tipo, entityList);
+        bulkCopy.BatchSize = 100;
+        bulkCopy.EnableStreaming = true;
+        bulkCopy.BulkCopyTimeout = 60000;
+        bulkCopy.WriteToServer(table);
+
+    }
     
 }
