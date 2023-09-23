@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlTest", "SqlTest\SqlTest.csproj", "{090E181D-E758-4D0D-B78F-96788EEBB392}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{6007CC03-DB82-46CB-985B-F1F566290FBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{090E181D-E758-4D0D-B78F-96788EEBB392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{090E181D-E758-4D0D-B78F-96788EEBB392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{090E181D-E758-4D0D-B78F-96788EEBB392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{090E181D-E758-4D0D-B78F-96788EEBB392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6007CC03-DB82-46CB-985B-F1F566290FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6007CC03-DB82-46CB-985B-F1F566290FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6007CC03-DB82-46CB-985B-F1F566290FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6007CC03-DB82-46CB-985B-F1F566290FBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
