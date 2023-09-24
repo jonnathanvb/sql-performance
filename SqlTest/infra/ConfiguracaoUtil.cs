@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace SqlTest.infra;
 
-public static class ReadFile
+public static class ConfiguracaoUtil
 {
     public static Config ReadConfig()
     {

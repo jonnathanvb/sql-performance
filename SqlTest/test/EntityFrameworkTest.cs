@@ -8,7 +8,7 @@ using SqlTest.infra;
 using System.Globalization;
 using Xunit.Abstractions;
 
-namespace SqlTest;
+namespace SqlTest.test;
 
 public class EntityFrameworkTest: IClassFixture<RepositoryFixture>
 {

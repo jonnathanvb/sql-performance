@@ -1,40 +1,34 @@
-
-
-using System.Data.SqlClient;
-using System.Reflection;
-using Infra.Connection;
+using Dapper;
 using Infra.Enitty;
 using Infra.Utils;
 
 namespace Infra.Repository;
 
-public class PessoaRepository : BaseRepositoryAbstract<Pessoa>
+public class PessoaRepositoryDapper: BaseRepositoryDapperAbstract<Pessoa>
 {
-    public PessoaRepository(ContextAdoNet contextAdoNet) : base(contextAdoNet)
+    public PessoaRepositoryDapper(ContextDapper dapper) : base(dapper)
     {
+        
     }
-
+    
     public void Insert(List<Pessoa> entityList)
     {
         var commandPart = typeof(Pessoa).CommandInsert(false);
-        using SqlConnection connection = _contextAdoNet.GetConnection();
-        
+        using var connection = _dapper.GetConnection();
         foreach (var x in entityList)
         {
             var commandSql = $"{commandPart} ('{x.Nome}', '{x.Telefone}', '{x.Logradouro}', '{x.Uf}', {x.Ano}, {x.Mes}, {x.Dia})";
-            
-            using SqlCommand command = new SqlCommand(commandSql, connection);
-            command.ExecuteNonQuery();
+            connection.Execute(commandSql);
         }
     }
+    
 
     public void InsertMultiple(List<Pessoa> list, int batchSize = 1000)
     {
         var commandPart = typeof(Pessoa).CommandInsert(false);
+        using var connection = _dapper.GetConnection();
         var page = list.Count.DividirIntUpValue(batchSize);
 
-        using SqlConnection connection = _contextAdoNet.GetConnection();
-   
 
         for (var i = 0; i < page; i++)
         {
@@ -44,9 +38,8 @@ public class PessoaRepository : BaseRepositoryAbstract<Pessoa>
                         $"('{x.Nome}', '{x.Telefone}', '{x.Logradouro}', '{x.Uf}', {x.Ano}, {x.Mes}, {x.Dia})")
                     .ToList());
             
-            using SqlCommand command = new SqlCommand(commandSql, connection);
 
-            command.ExecuteNonQuery();
+            connection.Execute(commandSql);
         }
     }
 }

@@ -8,19 +8,29 @@ namespace SqlTest.infra;
 
 public class RepositoryFixture
 {
-    public readonly PessoaRepository pessoa;
-    public List<Pessoa> listPessoa;
     
+    public List<Pessoa> listPessoa;
+    public readonly PessoaRepository pessoaRepository;
+    public readonly PessoaRepositoryDapper pessoaRepositoryDapper;
     public readonly PessoaRepositoryEntity pessoaEntityFramework;
+    private readonly Config _config;
 
     public RepositoryFixture()
     {
-        var config = ReadFile.ReadConfig();
-        var adonet = new ContextAdoNet(config.SqlServer);
-        pessoa = new PessoaRepository(adonet);
-        listPessoa = Generate();
         
-        var contextEntity = new ContextEntityFramework(config.SqlServer);
+        _config = ConfiguracaoUtil.ReadConfig();
+       
+        listPessoa = Generate();
+        // AdoNet
+        var adonet = new ContextAdoNet(_config.SqlServer);
+        pessoaRepository = new PessoaRepository(adonet);
+        
+        // Dapper
+        var contextDapper = new ContextDapper(_config.SqlServer);
+        pessoaRepositoryDapper = new PessoaRepositoryDapper(contextDapper);
+        
+        // Entity
+        var contextEntity = new ContextEntityFramework(_config.SqlServer);
         pessoaEntityFramework = new PessoaRepositoryEntity(contextEntity);
     }
 
@@ -28,7 +38,7 @@ public class RepositoryFixture
     private List<Pessoa> Generate()
     {
         var pessoaList = new List<Pessoa>();
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < _config.Quantidade; i++)
         {
             var data = new Faker().Date.BetweenOffset(DateTime.Now.AddYears(-50), DateTime.Now.AddYears(-20));
             var pessoa = new Faker<Pessoa>("pt_BR")
