@@ -24,6 +24,7 @@ public class ContextAdoNet: IDisposable
         }
         else if (connection.State != ConnectionState.Open)
         {
+            connection = new SqlConnection(connectionString);
             connection.Open();
         }
 

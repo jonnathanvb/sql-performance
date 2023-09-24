@@ -7,7 +7,7 @@ namespace Infra.Repository;
 
 public abstract class BaseRepositoryAbstract<T> where T : class
 {
-    private readonly ContextAdoNet _contextAdoNet;
+    protected readonly ContextAdoNet _contextAdoNet;
 
 
     public BaseRepositoryAbstract(ContextAdoNet contextAdoNet)
@@ -20,7 +20,7 @@ public abstract class BaseRepositoryAbstract<T> where T : class
     private string CommandInsert(Type entity)
     {
 
-        PropertyInfo[] properties = entity.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => !x.PropertyType.IsClass || x.PropertyType == typeof(string)).ToArray();
+        PropertyInfo[] properties = entity.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => !x.Name.Equals("id", StringComparison.CurrentCultureIgnoreCase) && (!x.PropertyType.IsClass || x.PropertyType == typeof(string))).ToArray();
 
         var tableName = entity.Name;
         var columns = string.Join(", ", properties.Select(prop => prop.Name));

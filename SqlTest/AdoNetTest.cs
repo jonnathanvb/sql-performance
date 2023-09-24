@@ -10,68 +10,65 @@ using Xunit.Abstractions;
 
 namespace SqlTest;
 
-public class AdoNetTest
+public class AdoNetTest: IClassFixture<RepositoryFixture>
 {
     private readonly ITestOutputHelper _testOutputHelper;
-    private readonly PessoaRepository _pessoaRepository;
-    private List<Pessoa> _listPessoa;
+    private readonly RepositoryFixture _fixture; 
 
-    public AdoNetTest(ITestOutputHelper testOutputHelper)
+    public AdoNetTest(ITestOutputHelper testOutputHelper, RepositoryFixture fixture)
     {
         _testOutputHelper = testOutputHelper;
-        var config = ReadFile.ReadConfig();
-        var adonet = new ContextAdoNet(config.SqlServer);
-        _pessoaRepository = new PessoaRepository(adonet);
-        testOutputHelper.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture));
-        Generate();
-        testOutputHelper.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+        _fixture = fixture;
     }
 
-    private void Generate()
-    {
-        var pessoaList = new List<Pessoa>();
-        for (int i = 0; i < 500; i++)
-        {
-            var data = new Faker().Date.BetweenOffset(DateTime.Now.AddYears(-50), DateTime.Now.AddYears(-20));
-            var pessoa = new Faker<Pessoa>("pt_BR")
-                .RuleFor(x => x.Nome, x => x.Name.FullName(x.PickRandom<Name.Gender>()))
-                .RuleFor(x => x.Telefone, x => x.Phone.PhoneNumber())
-                .RuleFor(x => x.Logradouro, x => x.Address.StreetName())
-                .RuleFor(x => x.Uf, x => x.Address.StateAbbr())
-                .RuleFor(x => x.Ano, data.Year)
-                .RuleFor(x => x.Mes, data.Month)
-                .RuleFor(x => x.Dia, data.Day)
-                .Generate();
-            pessoaList.Add(pessoa);
-        }
-
-        _listPessoa = pessoaList;
-    }
+    
 
     /// <summary>
     /// Faz teste de perfomace de um insert usando insert basico
     /// </summary>
-    [Fact]
-    public void InsertOne()
-    {
-        var pessoa = _listPessoa.FirstOrDefault();
-        _pessoaRepository.Insert(pessoa);
-        Assert.True(true);
-
-    }
+    // [Fact]
+    // public void InsertOne()
+    // {
+    //     _testOutputHelper.WriteLine("Insert");
+    //     var pessoa = _fixture.listPessoa.FirstOrDefault();
+    //     _fixture.pessoa.Insert(pessoa);
+    //     Assert.True(true);
+    //
+    // }
     
     [Fact]
     public void InsertList()
     {
-        _pessoaRepository.Insert(_listPessoa);
+        _fixture.pessoa.Insert(_fixture.listPessoa);
         Assert.True(true);
 
     }
     
+    // [Fact]
+    // public void InsertListWithForEach()
+    // {
+    //     foreach (var pessoa in _fixture.listPessoa)
+    //     {
+    //         _fixture.pessoa.Insert(pessoa);
+    //     }
+    //     Assert.True(true);
+    //
+    // }
+    
     [Fact]
+    public void InsertMultiplo()
+    {
+        _testOutputHelper.WriteLine("InsertMultiplo");
+        _fixture.pessoa.InsertMultiplo(_fixture.listPessoa);
+        Assert.True(true);
+
+    }
+    
+    [Fact()]
     public void InsertBulkList()
     {
-        _pessoaRepository.BulkInsert(_listPessoa);
+       
+        _fixture.pessoa.BulkInsert(_fixture.listPessoa);
         Assert.True(true);
 
     }

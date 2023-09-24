@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace SqlTest.infra;
 
-public class ReadFile
+public static class ReadFile
 {
     public static Config ReadConfig()
     {
@@ -11,5 +11,16 @@ public class ReadFile
         var json = File.ReadAllText(path);
         var objeto = JsonConvert.DeserializeObject<Config>(json);
         return objeto;
+    }
+    
+    public static List<T> CloneLista<T>(this List<T> listaOriginal)
+    {
+        // Serialize a lista original para JSON
+        string json = JsonConvert.SerializeObject(listaOriginal);
+
+        // Desserialize o JSON em uma nova lista (criando cópias independentes)
+        List<T> listaClone = JsonConvert.DeserializeObject<List<T>>(json);
+
+        return listaClone;
     }
 }
